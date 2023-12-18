@@ -5,16 +5,30 @@ const { autoUpdater } = require('electron-updater');
 
 
 //Basic flags
-autoUpdater.autoDownload = false;
+autoUpdater.autoDownload = true;
 autoUpdater.autoInstallOnAppQuit = true;
 const { dialog } = require('electron')
 
 let mainWindow;
+let loadingScreen;
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 //if (require('electron-squirrel-startup')) {
 //  app.quit();
 //}
+function createLoadingScreen() {
+  loadingScreen = new BrowserWindow({
+      width: 400,
+      height: 300,
+      frame: false,
+      transparent: false
+  });
+  loadingScreen.loadFile(path.join(__dirname, 'loading_download.html'));
+  loadingScreen.on('closed', () => loadingScreen = null);
+  loadingScreen.webContents.on('did-finish-load', () => {
+      loadingScreen.show();
+  });
+}
 
 const createWindow = () => {
   // Create the browser window.
@@ -39,22 +53,51 @@ const createWindow = () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
+  //createLoadingScreen();
   createWindow();
   //console.log(`The current update URL is: ${process.env.UPDATE_URL}`);
+  autoUpdater.checkForUpdatesAndNotify();
 
+    // Simulate update process
+  //   setTimeout(() => {
+  //     if (!loadingScreen) {
+  //         createLoadingScreen();
+  //     }
+  //     // Simulate the end of the update process
+  //     setTimeout(() => {
+  //         if (loadingScreen) {
+  //             loadingScreen.close();
+  //         }
+  //     }, 10000); // Close the loading screen after 10 seconds
+  // }, 1000); // Show the loading screen after 5 seconds
+
+
+
+
+
+  autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
+    // Show loading screen
+    if (!loadingScreen) {
+        createLoadingScreen();
+    }
+    // Prepare to apply update
+    setTimeout(() => {
+        autoUpdater.quitAndInstall();
+    }, 5000);
+});
 
   app.on("activate", function () {
     if (BrowserWindow.getAllWindows().length == 0) createWindow();
   });
-  autoUpdater.checkForUpdatesAndNotify();
-  dialog.showMessageBox(mainWindow, {
-    type: 'info',
-    title: 'Information',
-    message: `Checking for updates. Current version ${app.getVersion()}`,
-  })
+  
+
+  // dialog.showMessageBox(mainWindow, {
+  //   type: 'info',
+  //   title: 'Information',
+  //   message: `Checking for updates. Current version ${app.getVersion()}`,
+  // })
 
 });
-
 
 
 // Quit when all windows are closed, except on macOS. There, it's common
@@ -71,43 +114,66 @@ app.on('window-all-closed', () => {
 // code. You can also put them in separate files and import them here.
 
 //update handling
+
+autoUpdater.on('update-available', () => {
+  if (mainWindow) {
+      mainWindow.webContents.send('update_available');
+  }
+});
+
+autoUpdater.on('update-not-available', () => {
+  if (loadingScreen) {
+      loadingScreen.close();
+  }
+});
+
+autoUpdater.on('error', (err) => {
+  if (loadingScreen) {
+      loadingScreen.close();
+  }
+
+});
 /*New Update Available*/
-autoUpdater.on("update-available", (info) => {
+
+
+
+
+/* autoUpdater.on("update-available", (info) => {
   dialog.showMessageBox(mainWindow, {
     type: 'info',
     title: 'Information',
-    message: `Update available. Current version ${app.getVersion()}`,
+    message: `Update available and will be downloaded. Current version ${app.getVersion()}`,
   })
 
   let pth = autoUpdater.downloadUpdate();
   //mainWindow.showMessage(pth);
 
-});
+}); */
 
-autoUpdater.on("update-not-available", (info) => {
-  dialog.showMessageBox(mainWindow, {
-    type: 'info',
-    title: 'Information',
-    message: `No update available. Current version ${app.getVersion()}`,
-  })
+// autoUpdater.on("update-not-available", (info) => {
+//   dialog.showMessageBox(mainWindow, {
+//     type: 'info',
+//     title: 'Information',
+//     message: `No update available. Current version ${app.getVersion()}`,
+//   })
 
-});
+// });
 
-/*Download Completion Message*/
-autoUpdater.on("update-downloaded", (info) => {
-  dialog.showMessageBox(mainWindow, {
-    type: 'info',
-    title: 'Information',
-    message: `Update downloaded. Current version ${app.getVersion()}`,
-  })
+// /*Download Completion Message*/
+// autoUpdater.on("update-downloaded", (info) => {
+//   dialog.showMessageBox(mainWindow, {
+//     type: 'info',
+//     title: 'Information',
+//     message: `Update downloaded. Current version ${app.getVersion()}`,
+//   })
 
-  //mainWindow.showMessage(`Update downloaded. Current version ${app.getVersion()}`);
-});
+//   //mainWindow.showMessage(`Update downloaded. Current version ${app.getVersion()}`);
+// });
 
-autoUpdater.on("error", (info) => {
-  dialog.showMessageBox(mainWindow, {
-    type: 'info',
-    title: 'Information',
-    message: (info),
-  })
-});
+// autoUpdater.on("error", (info) => {
+//   dialog.showMessageBox(mainWindow, {
+//     type: 'info',
+//     title: 'Information',
+//     message: (info),
+//   })
+// });

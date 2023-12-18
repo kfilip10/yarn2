@@ -1,6 +1,6 @@
 {
   "name": "EB-yarn",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Test using EB and yarn",
   "main": "src/index.js",
   "repository": "https://github.com/kfilip10/yarn2",
@@ -8,7 +8,9 @@
   "license": "MIT",
   "private": false,
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "build": "electron-builder",
+    "dist": "electron-builder --publish=always"
   },
   "build": {
     "appId": "com.electron.eb-yarn",
@@ -26,7 +28,16 @@
       "output": "build"
     },
     "win": {
-      "target": "nsis"
+      "target": "nsis",
+      "publish": [
+        {
+          "provider": "github",
+          "owner": "kfilip10",
+          "repo": "yarn2",
+          "private": false,
+          "releaseType": "draft"
+        }
+      ]
     },
     "mac": {
       "target": "dmg"
