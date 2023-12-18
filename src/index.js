@@ -12,9 +12,9 @@ const { dialog } = require('electron')
 let mainWindow;
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
-if (require('electron-squirrel-startup')) {
-  app.quit();
-}
+//if (require('electron-squirrel-startup')) {
+//  app.quit();
+//}
 
 const createWindow = () => {
   // Create the browser window.
@@ -69,7 +69,6 @@ app.on('window-all-closed', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
-autoUpdater.on("")
 
 //update handling
 /*New Update Available*/
