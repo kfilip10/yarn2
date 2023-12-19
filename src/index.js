@@ -2,8 +2,12 @@
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
 const { autoUpdater } = require('electron-updater');
+const handleSquirrelEvent = require('./squirrelEvents');
 
-
+// if (handleSquirrelEvent()) {
+//   app.quit();
+//   return;
+// }
 //Basic flags
 autoUpdater.autoDownload = true;
 autoUpdater.autoInstallOnAppQuit = true;
@@ -75,7 +79,7 @@ app.whenReady().then(() => {
 
 
 
-  autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
+  autoUpdater.on('update-available', (event, releaseNotes, releaseName) => {
     // Show loading screen
     if (!loadingScreen) {
         createLoadingScreen();

@@ -1,6 +1,6 @@
 {
   "name": "EB-yarn",
-  "version": "1.0.2",
+  "version": "1.0.9",
   "description": "Test using EB and yarn",
   "main": "src/index.js",
   "repository": "https://github.com/kfilip10/yarn2",
@@ -29,6 +29,7 @@
     },
     "win": {
       "target": "nsis",
+      "icon": "build/icon.ico",
       "publish": [
         {
           "provider": "github",
@@ -38,6 +39,18 @@
           "releaseType": "draft"
         }
       ]
+    },
+    "nsis": {
+      "include": "build/installer.nsh",
+      "oneClick": true,
+      "allowToChangeInstallationDirectory": false,
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "installerHeaderIcon": "build/icon.ico",
+      "createDesktopShortcut": "always",
+      "createStartMenuShortcut": true,
+      "menuCategory": true,
+      "shortcutName": "EB-yarn"
     },
     "mac": {
       "target": "dmg"
